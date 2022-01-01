@@ -1,4 +1,4 @@
-module SQLite
+module SQLCipher
 
 using Random, Serialization
 using WeakRefStrings, DBInterface
@@ -114,7 +114,7 @@ end
 sqliteerror(db::DB) = sqliteerror(db.handle)
 sqliteexception(db::DB) = sqliteexception(db.handle)
 
-Base.show(io::IO, db::SQLite.DB) = print(io, string("SQLite.DB(", "\"$(db.file)\"", ")"))
+Base.show(io::IO, db::SQLCipher.DB) = print(io, string("SQLite.DB(", "\"$(db.file)\"", ")"))
 
 # prepare given sql statement
 function _Stmt(db::DB, sql::AbstractString)
@@ -348,16 +348,16 @@ end
 
 # get julia type for given column of the given statement
 function juliatype(handle, col)
-    stored_typeid = SQLite.sqlite3_column_type(handle, col)
-    if stored_typeid == SQLite.SQLITE_BLOB
+    stored_typeid = SQLCipher.sqlite3_column_type(handle, col)
+    if stored_typeid == SQLCipher.SQLITE_BLOB
         # blobs are serialized julia types, so just try to deserialize it
-        deser_val = SQLite.sqlitevalue(Any, handle, col)
+        deser_val = SQLCipher.sqlitevalue(Any, handle, col)
         # FIXME deserialized type have priority over declared type, is it fine?
         return typeof(deser_val)
     else
         stored_type = juliatype(stored_typeid)
     end
-    decl_typestr = SQLite.sqlite3_column_decltype(handle, col)
+    decl_typestr = SQLCipher.sqlite3_column_decltype(handle, col)
     if decl_typestr != C_NULL
         return juliatype(unsafe_string(decl_typestr), stored_type)
     else
@@ -686,7 +686,7 @@ last_insert_rowid(db::DB) = sqlite3_last_insert_rowid(db.handle)
 Enables extension loading (off by default) on the sqlite database `db`. Pass `false` as the second argument to disable.
 """
 function enable_load_extension(db::DB, enable::Bool=true)
-   ccall((:sqlite3_enable_load_extension, SQLite.libsqlite), Cint, (Ptr{Cvoid}, Cint), db.handle, enable)
+   ccall((:sqlite3_enable_load_extension, SQLCipher.libsqlite), Cint, (Ptr{Cvoid}, Cint), db.handle, enable)
 end
 
 """

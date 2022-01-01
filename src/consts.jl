@@ -9,7 +9,7 @@ include(depsjl_path)
 
 else
 
-using SQLite_jll
+using SQLCipher_jll: libsqlcipher as libsqlite
 
 end
 

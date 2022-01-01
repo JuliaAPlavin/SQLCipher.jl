@@ -48,9 +48,9 @@ function scalarfunc(func,fsym=Symbol(string(func)))
     return quote
         #nm needs to be a symbol or expr, i.e. :sin or :(Base.sin)
         function $(nm)(context::Ptr{Cvoid}, nargs::Cint, values::Ptr{Ptr{Cvoid}})
-            args = [SQLite.sqlvalue(values, i) for i in 1:nargs]
+            args = [SQLCipher.sqlvalue(values, i) for i in 1:nargs]
             ret = $(func)(args...)
-            SQLite.sqlreturn(context, ret)
+            SQLCipher.sqlreturn(context, ret)
             nothing
         end
         return $(nm)
