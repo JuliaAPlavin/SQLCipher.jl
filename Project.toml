@@ -1,6 +1,6 @@
 name = "SQLCipher"
 uuid = "e3bbf2a3-a30c-4959-806c-295e8e13e4d8"
-authors = ["Jacob Quinn <quinn.jacobd@gmail.com>", "JuliaData Contributors"]
+authors = ["Alexander Plavin <alexander@plav.in>", "Jacob Quinn <quinn.jacobd@gmail.com>", "JuliaData Contributors"]
 version = "1.6.0"
 
 [deps]
