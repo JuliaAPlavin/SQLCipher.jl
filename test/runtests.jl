@@ -904,6 +904,39 @@ end
         close(db)
         rm(dbfile)
     end
+
+@testset "encryption" begin
+    @testset "require correct password" begin
+        dbfile = joinpath(mktempdir(), "tmp_db.sqlite")
+        db = SQLite.DB(dbfile)
+        SQLite.execute(db, """PRAGMA key="password" """)
+        tbl = (a = [1, 2, 3], b = ["a", "b", "c"])
+        SQLite.load!(tbl, db, "test_table")
+        tbl_read = DBInterface.execute(db, "SELECT * FROM test_table") |> columntable
+        @test tbl == tbl_read
+
+        db_nopw = SQLite.DB(dbfile)
+        @test_throws SQLiteException DBInterface.execute(db_nopw, "SELECT * FROM test_table") |> columntable
+
+        db_wrongpw = SQLite.DB(dbfile)
+        SQLite.execute(db_wrongpw, """PRAGMA key="password wrong" """)
+        @test_throws SQLiteException DBInterface.execute(db_wrongpw, "SELECT * FROM test_table") |> columntable
+    end
+
+    @testset "can't use password read unencrypted" begin
+        dbfile = joinpath(mktempdir(), "tmp_db.sqlite")
+        db = SQLite.DB(dbfile)
+        tbl = (a = [1, 2, 3], b = ["a", "b", "c"])
+        SQLite.load!(tbl, db, "test_table")
+        tbl_read = DBInterface.execute(db, "SELECT * FROM test_table") |> columntable
+        @test tbl == tbl_read
+
+        db_wrongpw = SQLite.DB(dbfile)
+        SQLite.execute(db_wrongpw, """PRAGMA key="password" """)
+        @test_throws SQLiteException DBInterface.execute(db_wrongpw, "SELECT * FROM test_table") |> columntable
+    end
+end
+
 end # @testset
 
 struct UnknownSchemaTable end
