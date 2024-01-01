@@ -1,4 +1,5 @@
-using SQLite
+using SQLCipher
+const SQLite = SQLCipher
 using Test, Dates, Random, WeakRefStrings, Tables, DBInterface
 
 import Base: +, ==

@@ -1,4 +1,4 @@
-module SQLite
+module SQLCipher
 
 using Random, Serialization
 using WeakRefStrings, DBInterface

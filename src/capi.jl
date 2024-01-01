@@ -1,6 +1,6 @@
 module C
 
-using SQLite_jll
+using SQLCipher_jll: SQLCipher_jll as SQLite_jll, libsqlcipher as libsqlite
 export SQLite_jll
 
 # typedef void ( * sqlite3_destructor_type ) ( void * )
